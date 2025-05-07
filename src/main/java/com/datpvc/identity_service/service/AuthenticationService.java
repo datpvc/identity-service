@@ -51,18 +51,18 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequset) {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
 
-        var user = userRepository.findByUsername(authenticationRequset.getUsername())
+        var user = userRepository.findByUsername(authenticationRequest.getUsername())
                .orElseThrow(()-> new AppException(ErrorCode.LOGIN_FAILED));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        boolean authenticated = passwordEncoder.matches(authenticationRequset.getPassword(), user.getPassword());
+        boolean authenticated = passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword());
         if(!authenticated) {
             throw new AppException(ErrorCode.LOGIN_FAILED);
         }
 
-        var token = generateToken(authenticationRequset.getUsername());
+        var token = generateToken(authenticationRequest.getUsername());
 
         return AuthenticationResponse.builder()
                 .token(token)
