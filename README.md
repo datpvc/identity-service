@@ -1,1 +1,1 @@
-# identityService
+# identity-service
