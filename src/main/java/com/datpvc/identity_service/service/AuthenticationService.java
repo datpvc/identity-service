@@ -4,6 +4,7 @@ import com.datpvc.identity_service.dto.request.AuthenticationRequest;
 import com.datpvc.identity_service.dto.request.IntrospectRequest;
 import com.datpvc.identity_service.dto.response.AuthenticationResponse;
 import com.datpvc.identity_service.dto.response.IntrospectResponse;
+import com.datpvc.identity_service.entity.User;
 import com.datpvc.identity_service.exception.AppException;
 import com.datpvc.identity_service.exception.ErrorCode;
 import com.datpvc.identity_service.repository.UserRepository;
@@ -19,11 +20,13 @@ import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +64,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.LOGIN_FAILED);
         }
 
-        var token = generateToken(authenticationRequest.getUsername());
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -69,18 +72,17 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String username) {
+    private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("datpvc-dang-hoc-java")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("authorities", "AUTHORITIES")
-                .claim("role", "ROLE_USER")
+                .claim("scope", buildScope(user))
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
@@ -92,5 +94,13 @@ public class AuthenticationService {
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String buildScope(User user) {
+        StringJoiner scopeJoiner = new StringJoiner(" ");
+        if(!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(scopeJoiner::add);
+        }
+        return scopeJoiner.toString();
     }
 }

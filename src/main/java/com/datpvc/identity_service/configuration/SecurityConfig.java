@@ -1,5 +1,6 @@
 package com.datpvc.identity_service.configuration;
 
+import com.datpvc.identity_service.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,10 @@ public class SecurityConfig {
             "auth/token", "/auth/introspect"
     };
 
+    public final String[] ROLE_ADMIN_ENDPOINTS = {
+            "/users"
+    };
+
     @Value("${jwt.signer}")
     private String jwtSigner;
 
@@ -31,7 +36,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.GET, ROLE_ADMIN_ENDPOINTS).hasRole(Role.ADMIN.name())
+
+                        .anyRequest().authenticated()
         );
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
