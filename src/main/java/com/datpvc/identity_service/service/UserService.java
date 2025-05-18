@@ -37,9 +37,9 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-        user.setRoles(roles);
+//        HashSet<String> roles = new HashSet<>();
+//        roles.add(Role.USER.name());
+//        user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -61,13 +61,13 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
-        return  userRepository.findAll()
+        return userRepository.findAll()
                     .stream().map(userMapper::toUserResponse).toList();
     }
 
-    @PostAuthorize("hasRole('ADMIN') || returnObject.username == authentication.name")
+//    @PostAuthorize("hasRole('ADMIN') || returnObject.username == authentication.name")
     public UserResponse getUserById(String id) {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND)));
