@@ -20,6 +20,7 @@ import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -97,9 +98,15 @@ public class AuthenticationService {
 
     private String buildScope(User user) {
         StringJoiner scopeJoiner = new StringJoiner(" ");
-//        if(!CollectionUtils.isEmpty(user.getRoles())) {
-//            user.getRoles().forEach(scopeJoiner::add);
-//        }
+        if(!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(role -> {
+                scopeJoiner.add("ROLE_" + role.getName());
+                if(!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions()
+                            .forEach(permission -> scopeJoiner.add(permission.getName()));
+                }
+            });
+        }
         return scopeJoiner.toString();
     }
 }
