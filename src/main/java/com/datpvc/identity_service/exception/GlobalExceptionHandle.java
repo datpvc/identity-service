@@ -14,7 +14,7 @@ public class GlobalExceptionHandle {
     ResponseEntity<ApiResponse<?>> handleException(Exception exception) {
         return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getStatusCode()).body(
                 ApiResponse.builder()
-                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode().value())
+                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
                         .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
                         .build()
         );
@@ -25,7 +25,7 @@ public class GlobalExceptionHandle {
         ErrorCode errorCode = exception.getErrorCode();
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 ApiResponse.builder()
-                        .code(errorCode.getStatusCode().value())
+                        .code(errorCode.getCode())
                         .message(errorCode.getMessage())
                         .build()
                 );
@@ -36,7 +36,7 @@ public class GlobalExceptionHandle {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 ApiResponse.builder()
-                        .code(errorCode.getStatusCode().value())
+                        .code(errorCode.getCode())
                         .message(errorCode.getMessage())
                         .build()
         );

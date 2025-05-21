@@ -8,6 +8,7 @@ import com.datpvc.identity_service.enums.Role;
 import com.datpvc.identity_service.exception.AppException;
 import com.datpvc.identity_service.exception.ErrorCode;
 import com.datpvc.identity_service.mapper.UserMapper;
+import com.datpvc.identity_service.repository.RoleRepository;
 import com.datpvc.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
+    RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
@@ -47,9 +49,11 @@ public class UserService {
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
-        userMapper.updateUser(user, request);
 
+        userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -61,13 +65,15 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll()
-                    .stream().map(userMapper::toUserResponse).toList();
+                .stream()
+                .map(userMapper::toUserResponse)
+                .toList();
     }
 
-//    @PostAuthorize("hasRole('ADMIN') || returnObject.username == authentication.name")
+    @PostAuthorize("hasRole('ADMIN') || returnObject.username == authentication.name")
     public UserResponse getUserById(String id) {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND)));
