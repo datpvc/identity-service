@@ -39,8 +39,9 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-//        HashSet<String> roles = new HashSet<>();
-//        roles.add(Role.USER.name());
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+
 //        user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
@@ -52,12 +53,14 @@ public class UserService {
 
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String id) {
         if(!userRepository.existsById(id)) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
