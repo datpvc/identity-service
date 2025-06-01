@@ -1,6 +1,7 @@
 package com.datpvc.identity_service.controller;
 
 import com.datpvc.identity_service.dto.request.IntrospectRequest;
+import com.datpvc.identity_service.dto.request.LogoutRequest;
 import com.datpvc.identity_service.dto.response.ApiResponse;
 import com.datpvc.identity_service.dto.response.AuthenticationResponse;
 import com.datpvc.identity_service.dto.request.AuthenticationRequest;
@@ -36,6 +37,15 @@ public class AuthenticationController {
 
         return ApiResponse.<IntrospectResponse>builder()
                 .result(authenticationService.introspect(request))
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+        authenticationService.logout(request);
+
+        return ApiResponse.<Void>builder()
                 .build();
     }
 }
