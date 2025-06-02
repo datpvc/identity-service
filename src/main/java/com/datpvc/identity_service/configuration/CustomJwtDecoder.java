@@ -3,6 +3,8 @@ package com.datpvc.identity_service.configuration;
 import com.datpvc.identity_service.dto.request.IntrospectRequest;
 import com.datpvc.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,23 +18,24 @@ import java.text.ParseException;
 import java.util.Objects;
 
 @Component
+@Slf4j
 public class CustomJwtDecoder implements JwtDecoder {
-    AuthenticationService authenticationService;
-
     @Value("${jwt.signer}")
     private String jwtSigner;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     private NimbusJwtDecoder nimbusJwtDecoder = null;
 
     @Override
     public Jwt decode(String token) throws JwtException {
         try {
-         var response = authenticationService.introspect(IntrospectRequest.builder()
-                         .token(token)
-                 .build());
-         if(response.isValid()){
-             throw new JwtException("JWT token is invalid");
-         }
+         var response = authenticationService.introspect(
+                 IntrospectRequest.builder().token(token).build()
+         );
+
+         if(!response.isValid()) throw new JwtException("JWT token is invalid");
         } catch (JOSEException | ParseException e) {
             throw new JwtException(e.getMessage());
         }
