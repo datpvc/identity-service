@@ -2,6 +2,7 @@ package com.datpvc.identity_service.controller;
 
 import com.datpvc.identity_service.dto.request.IntrospectRequest;
 import com.datpvc.identity_service.dto.request.LogoutRequest;
+import com.datpvc.identity_service.dto.request.RefreshTokenRequest;
 import com.datpvc.identity_service.dto.response.ApiResponse;
 import com.datpvc.identity_service.dto.response.AuthenticationResponse;
 import com.datpvc.identity_service.dto.request.AuthenticationRequest;
@@ -37,6 +38,14 @@ public class AuthenticationController {
 
         return ApiResponse.<IntrospectResponse>builder()
                 .result(authenticationService.introspect(request))
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshTokenRequest request)
+            throws ParseException, JOSEException {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.refreshToken(request))
                 .build();
     }
 
