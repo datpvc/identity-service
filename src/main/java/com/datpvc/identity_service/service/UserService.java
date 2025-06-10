@@ -9,11 +9,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.datpvc.identity_service.constant.PredefinedRole;
 import com.datpvc.identity_service.dto.request.UserCreationRequest;
 import com.datpvc.identity_service.dto.request.UserUpdateRequest;
 import com.datpvc.identity_service.dto.response.UserResponse;
+import com.datpvc.identity_service.entity.Role;
 import com.datpvc.identity_service.entity.User;
-import com.datpvc.identity_service.enums.Role;
 import com.datpvc.identity_service.exception.AppException;
 import com.datpvc.identity_service.exception.ErrorCode;
 import com.datpvc.identity_service.mapper.UserMapper;
@@ -41,10 +42,10 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        HashSet<Role> roles = new HashSet<>();
+        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
-        //        user.setRoles(roles);
+        user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
