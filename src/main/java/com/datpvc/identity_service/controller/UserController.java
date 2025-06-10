@@ -1,18 +1,20 @@
 package com.datpvc.identity_service.controller;
 
-import com.datpvc.identity_service.dto.response.UserResponse;
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.datpvc.identity_service.dto.request.UserCreationRequest;
 import com.datpvc.identity_service.dto.request.UserUpdateRequest;
 import com.datpvc.identity_service.dto.response.ApiResponse;
+import com.datpvc.identity_service.dto.response.UserResponse;
 import com.datpvc.identity_service.service.UserService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -64,8 +66,6 @@ public class UserController {
     @DeleteMapping("/{userId}")
     ApiResponse deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
-        return ApiResponse.builder()
-                .message("Successfully deleted user")
-                .build();
+        return ApiResponse.builder().message("Successfully deleted user").build();
     }
 }

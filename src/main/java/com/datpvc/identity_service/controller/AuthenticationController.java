@@ -1,22 +1,24 @@
 package com.datpvc.identity_service.controller;
 
-import com.datpvc.identity_service.dto.request.IntrospectRequest;
-import com.datpvc.identity_service.dto.request.LogoutRequest;
-import com.datpvc.identity_service.dto.request.RefreshTokenRequest;
-import com.datpvc.identity_service.dto.response.ApiResponse;
-import com.datpvc.identity_service.dto.response.AuthenticationResponse;
-import com.datpvc.identity_service.dto.request.AuthenticationRequest;
-import com.datpvc.identity_service.dto.response.IntrospectResponse;
-import com.datpvc.identity_service.service.AuthenticationService;
-import com.nimbusds.jose.JOSEException;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import java.text.ParseException;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
+import com.datpvc.identity_service.dto.request.AuthenticationRequest;
+import com.datpvc.identity_service.dto.request.IntrospectRequest;
+import com.datpvc.identity_service.dto.request.LogoutRequest;
+import com.datpvc.identity_service.dto.request.RefreshTokenRequest;
+import com.datpvc.identity_service.dto.response.ApiResponse;
+import com.datpvc.identity_service.dto.response.AuthenticationResponse;
+import com.datpvc.identity_service.dto.response.IntrospectResponse;
+import com.datpvc.identity_service.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/auth")
@@ -50,11 +52,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    ApiResponse<Void> logout(@RequestBody LogoutRequest request)
-            throws ParseException, JOSEException {
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
 
-        return ApiResponse.<Void>builder()
-                .build();
+        return ApiResponse.<Void>builder().build();
     }
 }
