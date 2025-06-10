@@ -1,15 +1,17 @@
 package com.datpvc.identity_service.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.datpvc.identity_service.dto.request.RoleRequest;
 import com.datpvc.identity_service.dto.response.ApiResponse;
 import com.datpvc.identity_service.dto.response.RoleResponse;
 import com.datpvc.identity_service.service.RoleService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
@@ -37,8 +39,6 @@ public class RoleController {
     @DeleteMapping("/{roleId}")
     ApiResponse<Void> delete(@PathVariable String roleId) {
         roleService.delete(roleId);
-        return ApiResponse.<Void>builder()
-                .message("Successfully deleted role")
-                .build();
+        return ApiResponse.<Void>builder().message("Successfully deleted role").build();
     }
 }
