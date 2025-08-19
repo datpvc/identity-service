@@ -28,9 +28,9 @@ This microservice is responsible for:
 ### Create network:
 `docker network create datpvc-network`
 ### Start MySQL in datpvc-network
-`docker run --network datpvc-network --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.0.36-debian`
+`docker run --network datpvc-network --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:9.3-oracle`
 ### Run your application in datpvc-network
-`docker run --name identity-service --network datpvc-network -p 8080:8080 -e DBMS_CONNECTION=jdbc:mysql://mysql:3306/identity_service identity-service:0.9.0`
+`docker run --name identity-service --network datpvc-network -p 8080:8080 -e DBMS_CONNECTION=jdbc:mysql://mysql:3306/identity_service datpvc/identity-service:0.9.0`
 
 ## Install Docker on ubuntu
 
